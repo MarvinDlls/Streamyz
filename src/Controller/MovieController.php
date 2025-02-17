@@ -34,21 +34,10 @@ class MovieController extends AbstractController
         ]);
     }
 
-
-    #[Route("/movie/{id}", name: 'movie_detail')]
+    #[Route('/movie/{id}', name: 'movie_detail')]
     public function detail(int $id): Response
     {
         $details = $this->tmdbApiService->fetchDetailMovie($id);
-
-        return $this->render('movies/detail.html.twig', [
-            'details' => $details,
-        ]);
-    }
-
-
-    #[Route('/player/{id}', name: 'movie_show')]
-    public function show(int $id): Response
-    {   
         $videos = $this->tmdbApiService->videoMovie($id);
 
         $trailer = null;
@@ -59,8 +48,9 @@ class MovieController extends AbstractController
             }
         }
 
-        return $this->render('components/player.html.twig', [
-            'trailer' => $trailer
+        return $this->render('movies/detail.html.twig', [
+            'details' => $details,
+            'trailer' => $trailer,
         ]);
     }
 }
