@@ -34,6 +34,17 @@ class MovieController extends AbstractController
         ]);
     }
 
+
+    #[Route("/movie/{id}", name: 'movie_detail')]
+    public function detail(int $id): Response
+    {
+        $details = $this->tmdbApiService->fetchDetailMovie($id);
+
+        return $this->render('movies/detail.html.twig', [
+            'details' => $details,
+        ]);
+    }                
+
     
     #[Route('/player', name: 'player')]
     public function id(): Response
