@@ -9,9 +9,11 @@
 
         {% block javascripts %}
             {% block importmap %}{{ importmap('app') }}{% endblock %}
+            <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
         {% endblock %}
     </head>
     <body>
+        {% include 'components/nav.html.twig' %}
         {% block body %}{% endblock %}
     </body>
 </html>
