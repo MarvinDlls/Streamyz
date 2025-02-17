@@ -1,13 +1,9 @@
-<div class="relative w-full max-w-full">
-    <video
-        {% if width is defined %}width="{{ width }}"{% endif %}
-        {% if height is defined %}height="{{ height }}"{% endif %}
-        {% if controls %}controls{% endif %}
-        {% if autoplay %}autoplay{% endif %}
-        {% if loop %}loop{% endif %}
-        class="w-full h-full object-cover"
-    >
-        <source src="{{ video_url }}" type="{{ mime_type|default('video/mp4') }}">
-        Votre navigateur ne supporte pas la lecture de vidéos.
-    </video>
-</div>
+{% if trailer %}
+    <div class="video-container">
+        <iframe 
+            src="https://www.youtube.com/embed/{{ trailer.key }}"
+            class="w-full aspect-video rounded-lg"
+            allowfullscreen
+        ></iframe>
+    </div>
+{% endif %}
