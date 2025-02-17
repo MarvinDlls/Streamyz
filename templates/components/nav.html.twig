@@ -6,7 +6,7 @@
         <p class="text-center text-gray-300 text-lg">Découvrez tous les films à l'affiche</p>
     </div>
     <section aria-labelledby="movies-search" class="mb-10">
-        <form method="GET" class="max-w-2xl mx-auto">
+        <form action="{{ path('movie_list') }}" method="GET" class="max-w-2xl mx-auto">
             <div class="relative">
                 <div class="absolute inset-y-0 start-0 flex items-center ps-4 pointer-events-none">
                     <svg class="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
