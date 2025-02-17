@@ -43,20 +43,24 @@ class MovieController extends AbstractController
         return $this->render('movies/detail.html.twig', [
             'details' => $details,
         ]);
-    }                
+    }
 
-    
-    #[Route('/player', name: 'player')]
-    public function id(): Response
-    {
+
+    #[Route('/player/{id}', name: 'movie_show')]
+    public function show(int $id): Response
+    {   
+        $videos = $this->tmdbApiService->videoMovie($id);
+
+        $trailer = null;
+        foreach ($videos['results'] ?? [] as $video) {
+            if ($video['type'] === 'Trailer' && $video['site'] === 'YouTube') {
+                $trailer = $video;
+                break;
+            }
+        }
+
         return $this->render('components/player.html.twig', [
-            'video_url' => 'chemin/vers/video.mp4',
-            'width' => '640',
-            'height' => '360',
-            'controls' => true,
-            'autoplay' => false,
-            'loop' => false,
-            'mime_type' => 'video/mp4'
+            'trailer' => $trailer
         ]);
     }
 }
