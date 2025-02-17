@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Details du film{% endblock %}
+
+{% block body %}
+    <div class="movies">
+        <div class="movie">
+            <h2>{{ details.title }} <br> {{ details.release_date }} <br> {{ details.runtime }}min</h2>
+            <img src="https://image.tmdb.org/t/p/w500{{ details.poster_path }}" alt="{{ details.title }}">
+            <p>{{ details.overview }}</p>
+            <p>Langue d'origine : {{ details.original_language }}</p>
+            <p>{{ details.budget }} {{ details.revenue }}</p>
+        </div>
+    </div>
+{% endblock %}
