@@ -8,7 +8,7 @@
         <div class="movies grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-8 gap-6 p-6">
             {% for movie in movies %}
                 {% if movie.release_date != null %}
-                <a href="/movie/{id}">
+                <a href="{{ path('movie_detail', {id: movie.id}) }}">
                 <div class="movie bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 cursor-pointer">
                     <img class="size-70 object-cover" src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}">
                     <h2 class="text-lg m-2 text-center font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">{{ movie.title }}</h2>
