@@ -17,12 +17,6 @@ class History
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::GUID)]
-    private ?string $uuid = null;
-
-    #[ORM\Column(nullable: true)]
-    private ?array $tmdbid = null;
-
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
@@ -47,10 +41,9 @@ class History
     #[ORM\OneToMany(targetEntity: Report::class, mappedBy: 'tmdb', orphanRemoval: true)]
     private Collection $reportsMovie;
 
+
     public function __construct()
     {
-        $this->uuid = uniqid();
-        $this->tmdbid = [];
         $this->is_watched = false;
         $this->reportsUser = new ArrayCollection();
         $this->reportsMovie = new ArrayCollection();
@@ -73,30 +66,6 @@ class History
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getuuid(): ?string
-    {
-        return $this->uuid;
-    }
-
-    public function setuuid(string $uuid): static
-    {
-        $this->uuid = $uuid;
-
-        return $this;
-    }
-
-    public function gettmdbid(): ?array
-    {
-        return $this->tmdbid;
-    }
-
-    public function settmdbid(?array $tmdbid): static
-    {
-        $this->tmdbid = $tmdbid;
-
-        return $this;
     }
 
     public function getCreatedAt(): ?\DateTimeImmutable
@@ -146,10 +115,6 @@ class History
 
         return $this;
     }
-
-    /**
-     * @return Collection<int, Report>
-     */
 
     /**
      * @return Collection<int, Report>
