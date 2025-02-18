@@ -21,7 +21,6 @@ class HistoryService
         $this->rs = $rs;
     }
 
-
     // Crée ou récupèrer l'ID de l'utilisateur
     public function getUuid(Response $response): string
     {
@@ -32,9 +31,34 @@ class HistoryService
             $uuid = Uuid::v4()->toRfc4122();
             $cookie = Cookie::create('user_uuid', $uuid, strtotime('+1 year'));
             $response->headers->setCookie($cookie);
+
+            $history = new History();
+            $history
+                ->setIpAdress($request->getClientIp())
+                ->setUuid($uuid)
+            ;
+
+            $this->em->persist($history);
+            $this->em->flush();
         }
 
         return $uuid;
     }
 
+    public function addHistory(int $movieId, Response $response): void
+    {
+        $uuid = $this->getUuid($response);
+        $historyRepo = $this->em->getRepository(History::class);
+
+        $history = $historyRepo->findOneBy(['uuid' => $uuid]);
+
+        if (!$history) {
+            $history = new History();
+            $history->setUuid($uuid);
+        }
+
+        $history->addMovie($movieId);
+        $this->em->persist($history);
+        $this->em->flush();
+    }
 }
