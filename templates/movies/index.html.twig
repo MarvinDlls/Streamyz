@@ -1,29 +1,50 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}
-{% if not search %}
-    Home
-{% endif %}
-    {{ search }}
+	{% if not search %}
+		Home
+	{% endif %}
+	{{ search }}
 {% endblock %}
 
 {% block body %}
-    <body class="bg-gray-900 min-h-screen text-gray-100">
-    {% if not search %}
-        <h1 class="text-5xl font-bold text-center m-5 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">Films Populaires</h1>
-    {% endif %}
-        <div class="movies grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7 gap-6 p-6">
-            {% for movie in movies %}
-                {% if movie.release_date != null %}
-                <a href="{{ path('movie_detail', {id: movie.id}) }}">
-                <div class="movie bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 cursor-pointer">
-                    <img class="size-70 object-cover" src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}">
-                    <h2 class="text-lg m-2 text-center font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">{{ movie.title|slice(0,16) }}</h2>
-                    <p class="text-lg m-2 text-center font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">({{movie.release_date|slice(0,4)}})</p>
-                </div>
-                </a>
-                {% endif %}
-            {% endfor %}
-        </div>
-    </body>
+	<body class="bg-gray-900 min-h-screen text-gray-100">
+		<div class="flex items-center justify-center gap-8 m-5">
+			{% if not search %}
+				<h1 class="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">Films Populaires</h1>
+			{% endif %}
+			<form action="{{ path('movie_list') }}" method="GET" class="inline">
+				<select name="genre" onchange="this.form.submit()" class="p-2 rounded-lg border border-purple-400 bg-transparent text-purple-400 focus:outline-none focus:border-pink-400">
+					<option value="" disabled {% if not genre %} selected {% endif %}>Sélectionner un genre</option>
+					<option value="28" {% if genre == '28' %} selected {% endif %}>Action</option>
+					<option value="12" {% if genre == '12' %} selected {% endif %}>Aventure</option>
+					<option value="10752" {% if genre == '10752' %} selected {% endif %}>Guerre</option>
+					<option value="99" {% if genre == '99' %} selected {% endif %}>Documentaire</option>
+					<option value="18" {% if genre == '18' %} selected {% endif %}>Drame</option>
+					<option value="10751" {% if genre == '10751' %} selected {% endif %}>Famille</option>
+					<option value="14" {% if genre == '14' %} selected {% endif %}>Fantasy</option>
+					<option value="36" {% if genre == '36' %} selected {% endif %}>Histoire</option>
+					<option value="27" {% if genre == '27' %} selected {% endif %}>Horreur</option>
+					<option value="10402" {% if genre == '10402' %} selected {% endif %}>Musique</option>
+					<option value="9648" {% if genre == '9648' %} selected {% endif %}>Mystère</option>
+					<option value="10749" {% if genre == '10749' %} selected {% endif %}>Romance</option>
+					<option value="878" {% if genre == '878' %} selected {% endif %}>Science-Fiction</option>
+					<option value="53" {% if genre == '53' %} selected {% endif %}>Thriller</option>
+				</select>
+			</form>
+		</div>
+		<div class="movies grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7 gap-6 p-6">
+			{% for movie in movies %}
+				{% if movie.release_date != null %}
+					<a href="{{ path('movie_detail', {id: movie.id}) }}">
+						<div class="movie bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 cursor-pointer">
+							<img class="size-70 object-cover" src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}">
+							<h2 class="text-lg m-2 text-center font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">{{ movie.title|slice(0,16) }}</h2>
+							<p class="text-lg m-2 text-center font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">({{movie.release_date|slice(0,4)}})</p>
+						</div>
+					</a>
+				{% endif %}
+			{% endfor %}
+		</div>
+	</body>
 {% endblock %}

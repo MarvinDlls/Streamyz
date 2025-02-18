@@ -29,6 +29,18 @@ class TmdbApiService
         return $response->toArray();
     }
 
+    public function fetchGenreMovies(string $genre): array
+    {
+    $response = $this->client->request('GET', 'https://api.themoviedb.org/3/discover/movie', [
+        'query' => [
+            'api_key' => $this->apiKey,
+            'language' => 'fr-FR',
+            'with_genres' => $genre
+        ]
+    ]);
+
+    return $response->toArray();
+    }
 
     public function fetchDetailMovie(int $id): array
     {

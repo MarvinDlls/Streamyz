@@ -21,17 +21,32 @@ class MovieController extends AbstractController
     public function index(Request $request): Response
     {
         $search = $request->query->get('search');
+        $genre = $request->query->get('genre');
         
-        if ($search) {
-            $movies = $this->tmdbApiService->searchMovies($search);
-        } else {
-            $movies = $this->tmdbApiService->fetchPopularMovies();
+        try {
+            if ($search) {
+                $movies = $this->tmdbApiService->searchMovies($search);
+            } elseif ($genre) {
+                $movies = $this->tmdbApiService->fetchGenreMovies($genre);
+            } else {
+                $movies = $this->tmdbApiService->fetchPopularMovies();
+            }
+            
+            $results = isset($movies['results']) ? $movies['results'] : [];
+    
+            return $this->render('movies/index.html.twig', [
+                'movies' => $results,
+                'search' => $search,
+                'genre' => $genre
+            ]);
+        } catch (\Exception $e) {
+            return $this->render('movies/index.html.twig', [
+                'movies' => [],
+                'search' => $search,
+                'genre' => $genre,
+                'error' => 'Une erreur est survenue lors de la récupération des films.'
+            ]);
         }
-
-        return $this->render('movies/index.html.twig', [
-            'movies' => $movies['results'],
-            'search' => $search
-        ]);
     }
 
     #[Route('/movie/{id}', name: 'movie_detail')]
