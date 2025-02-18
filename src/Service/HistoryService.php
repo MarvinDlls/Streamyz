@@ -15,6 +15,7 @@ class HistoryService
     private $em;
     private $rs;
 
+    //
     public function __construct(EntityManagerInterface $em, RequestStack $rs)
     {
         $this->em = $em;
@@ -28,7 +29,7 @@ class HistoryService
         $uuid = $request->cookies->get('user_uuid');
 
         if (!$uuid) {
-            $uuid = Uuid::v4()->toRfc4122();
+            $uuid = Uuid::v4();
             $cookie = Cookie::create('user_uuid', $uuid, strtotime('+1 year'));
             $response->headers->setCookie($cookie);
 
@@ -36,6 +37,8 @@ class HistoryService
             $history
                 ->setIpAdress($request->getClientIp())
                 ->setUuid($uuid)
+                ->setCreatedAt(new \DateTimeImmutable())
+                ->setUpdatedAt(new \DateTimeImmutable())
             ;
 
             $this->em->persist($history);
@@ -57,7 +60,10 @@ class HistoryService
             $history->setUuid($uuid);
         }
 
-        $history->addMovie($movieId);
+        $history
+            ->addMovie($movieId)
+            ->setUpdatedAt(new \DateTimeImmutable())
+        ;
         $this->em->persist($history);
         $this->em->flush();
     }
