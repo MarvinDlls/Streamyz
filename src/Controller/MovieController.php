@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Service\HistoryService;
 use App\Service\TmdbApiService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -11,17 +12,19 @@ use Symfony\Component\Routing\Annotation\Route;
 class MovieController extends AbstractController
 {
     private TmdbApiService $tmdbApiService;
+    private HistoryService $historyService;
 
-    public function __construct(TmdbApiService $tmdbApiService)
+    public function __construct(TmdbApiService $tmdbApiService, HistoryService $historyService)
     {
         $this->tmdbApiService = $tmdbApiService;
+        $this->historyService = $historyService;
     }
 
     #[Route('/movies', name: 'movie_list')]
     public function index(Request $request): Response
     {
         $search = $request->query->get('search');
-        
+
         if ($search) {
             $movies = $this->tmdbApiService->searchMovies($search);
         } else {
@@ -33,10 +36,12 @@ class MovieController extends AbstractController
             'search' => $search
         ]);
     }
-
     #[Route('/movie/{id}', name: 'movie_detail')]
     public function detail(int $id): Response
     {
+        $response = new Response();
+
+        $this->historyService->addHistory($id, $response);
         $details = $this->tmdbApiService->fetchDetailMovie($id);
         $videos = $this->tmdbApiService->videoMovie($id);
 
@@ -51,6 +56,6 @@ class MovieController extends AbstractController
         return $this->render('movies/detail.html.twig', [
             'details' => $details,
             'trailer' => $trailer,
-        ]);
+        ], $response);
     }
 }
