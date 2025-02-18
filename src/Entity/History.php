@@ -3,8 +3,11 @@
 namespace App\Entity;
 
 use App\Repository\HistoryRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use phpDocumentor\Reflection\Types\Nullable;
 
 #[ORM\Entity(repositoryClass: HistoryRepository::class)]
 class History
@@ -32,11 +35,18 @@ class History
     #[ORM\Column(length: 255)]
     private ?string $ip_adress = null;
 
+    /**
+     * @var Collection<int, Report>
+     */
+    #[ORM\OneToMany(targetEntity: Report::class, mappedBy: 'uuid', nullable: false)]
+    private Collection $reports;
+
     public function __construct()
     {
         $this->uuid = uniqid();
         $this->tmdbid = [];
         $this->is_watched = false;
+        $this->reports = new ArrayCollection();
     }
 
     #[ORM\PrePersist]
@@ -126,6 +136,36 @@ class History
     public function setIpAdress(string $ip_adress): static
     {
         $this->ip_adress = $ip_adress;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Report>
+     */
+    public function getReports(): Collection
+    {
+        return $this->reports;
+    }
+
+    public function addReport(Report $report): static
+    {
+        if (!$this->reports->contains($report)) {
+            $this->reports->add($report);
+            $report->setUuid($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReport(Report $report): static
+    {
+        if ($this->reports->removeElement($report)) {
+            // set the owning side to null (unless already changed)
+            if ($report->getUuid() === $this) {
+                $report->setUuid(null);
+            }
+        }
 
         return $this;
     }
