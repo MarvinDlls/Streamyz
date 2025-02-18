@@ -38,15 +38,22 @@ class History
     /**
      * @var Collection<int, Report>
      */
-    #[ORM\OneToMany(targetEntity: Report::class, mappedBy: 'uuid', nullable: false)]
-    private Collection $reports;
+    #[ORM\OneToMany(targetEntity: Report::class, mappedBy: 'uuid', orphanRemoval: true)]
+    private Collection $reportsUser;
+
+    /**
+     * @var Collection<int, Report>
+     */
+    #[ORM\OneToMany(targetEntity: Report::class, mappedBy: 'tmdb', orphanRemoval: true)]
+    private Collection $reportsMovie;
 
     public function __construct()
     {
         $this->uuid = uniqid();
         $this->tmdbid = [];
         $this->is_watched = false;
-        $this->reports = new ArrayCollection();
+        $this->reportsUser = new ArrayCollection();
+        $this->reportsMovie = new ArrayCollection();
     }
 
     #[ORM\PrePersist]
@@ -143,27 +150,61 @@ class History
     /**
      * @return Collection<int, Report>
      */
-    public function getReports(): Collection
+
+    /**
+     * @return Collection<int, Report>
+     */
+    public function getReportsUser(): Collection
     {
-        return $this->reports;
+        return $this->reportsUser;
     }
 
-    public function addReport(Report $report): static
+    public function addReportsUser(Report $reportsUser): static
     {
-        if (!$this->reports->contains($report)) {
-            $this->reports->add($report);
-            $report->setUuid($this);
+        if (!$this->reportsUser->contains($reportsUser)) {
+            $this->reportsUser->add($reportsUser);
+            $reportsUser->setUuid($this);
         }
 
         return $this;
     }
 
-    public function removeReport(Report $report): static
+    public function removeReportsUser(Report $reportsUser): static
     {
-        if ($this->reports->removeElement($report)) {
+        if ($this->reportsUser->removeElement($reportsUser)) {
             // set the owning side to null (unless already changed)
-            if ($report->getUuid() === $this) {
-                $report->setUuid(null);
+            if ($reportsUser->getUuid() === $this) {
+                $reportsUser->setUuid(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Report>
+     */
+    public function getReportsMovie(): Collection
+    {
+        return $this->reportsMovie;
+    }
+
+    public function addReportsMovie(Report $reportsMovie): static
+    {
+        if (!$this->reportsMovie->contains($reportsMovie)) {
+            $this->reportsMovie->add($reportsMovie);
+            $reportsMovie->setTmdb($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReportsMovie(Report $reportsMovie): static
+    {
+        if ($this->reportsMovie->removeElement($reportsMovie)) {
+            // set the owning side to null (unless already changed)
+            if ($reportsMovie->getTmdb() === $this) {
+                $reportsMovie->setTmdb(null);
             }
         }
 

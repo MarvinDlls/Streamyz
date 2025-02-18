@@ -13,11 +13,16 @@ class Report
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'reports')]
-    private ?History $uuid = null;
-
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
+
+    #[ORM\ManyToOne(inversedBy: 'reportsUser')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?History $uuid = null;
+
+    #[ORM\ManyToOne(inversedBy: 'reportsMovie')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?History $tmdb = null;
 
     #[ORM\PrePersist]
     public function prePersist(): void
@@ -28,6 +33,18 @@ class Report
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $created_at): static
+    {
+        $this->created_at = $created_at;
+
+        return $this;
     }
 
     public function getUuid(): ?History
@@ -42,14 +59,14 @@ class Report
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getTmdb(): ?History
     {
-        return $this->created_at;
+        return $this->tmdb;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $created_at): static
+    public function setTmdb(?History $tmdb): static
     {
-        $this->created_at = $created_at;
+        $this->tmdb = $tmdb;
 
         return $this;
     }
