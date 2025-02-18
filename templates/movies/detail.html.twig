@@ -66,6 +66,20 @@
 							{{ details.revenue }}
 						{% endif %}
 					</p>
+					<div>
+						{% if reviews is empty %}
+							<p class="text-gray-500">Aucune review disponible pour ce film.</p>
+						{% else %}
+							<div class="space-y-4">
+								{% for review in reviews %}
+									<div class="p-4 border rounded-lg">
+										<div class="font-bold">{{ review.author }}</div>
+										<div class="text-gray-600">{{ review.content }}</div>
+									</div>
+								{% endfor %}
+							</div>
+						{% endif %}
+					</div>
 				</div>
 			</div>
 			{% if trailer %}
