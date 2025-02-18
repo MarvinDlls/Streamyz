@@ -1,13 +1,13 @@
-<header class="bg-gradient-to-r from-purple-900 to-blue-900 py-4 pb-[1px] shadow-xl">
+<header class="bg-gradient-to-r from-purple-900 to-blue-900 py-6 shadow-xl">
     <div class="max-w-7xl mx-auto">
-        <h1 class="text-5xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
+        <h1 class="text-5xl font-bold text-center pb-1 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
             <a href="{{ path('movie_list') }}">
             Streamyz
             </a>
         </h1>
-        <p class="text-center text-gray-300 text-lg">Découvrez tous les films à l'affiche</p>
+        <p class="text-center text-gray-300 text-lg pb-1">Découvrez tous les films à l'affiche</p>
     </div>
-    <section aria-labelledby="movies-search" class="mb-10">
+    <section aria-labelledby="movies-search">
         <form action="{{ path('movie_list') }}" method="GET" class="max-w-2xl mx-auto">
             <div class="relative">
                 <div class="absolute inset-y-0 start-0 flex items-center ps-4 pointer-events-none">
