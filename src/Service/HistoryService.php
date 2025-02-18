@@ -9,10 +9,6 @@ use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Uid\Uuid;
 
-/*
-
-*/
-
 class HistoryService
 {
 
@@ -41,25 +37,4 @@ class HistoryService
         return $uuid;
     }
 
-
-    public function addMovieToHistory(int $movieId, Response $response): void
-    {
-        $uuid = $this->getUuid($response);
-        $historyRepo = $this->em->getRepository(History::class);
-
-        $history = $historyRepo->findOneBy(['uuid' => $uuid]);
-
-        if (!$history) {
-            $history = new History();
-            $history
-                ->setUserId($uuid)
-                ->setMovies([$movieId])
-            ;
-        }
-
-        $history->addMovie($movieId);
-
-        $this->em->persist($history);
-        $this->em->flush();
-    }
 }

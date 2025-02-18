@@ -41,6 +41,12 @@ class History
     #[ORM\OneToMany(targetEntity: Report::class, mappedBy: 'tmdb', orphanRemoval: true)]
     private Collection $reportsMovie;
 
+    #[ORM\Column(length: 255)]
+    private ?string $uuid = null;
+
+    #[ORM\Column]
+    private ?int $tmdb = null;
+
 
     public function __construct()
     {
@@ -172,6 +178,30 @@ class History
                 $reportsMovie->setTmdb(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getUuid(): ?string
+    {
+        return $this->uuid;
+    }
+
+    public function setUuid(string $uuid): static
+    {
+        $this->uuid = $uuid;
+
+        return $this;
+    }
+
+    public function getTmdb(): ?int
+    {
+        return $this->tmdb;
+    }
+
+    public function setTmdb(int $tmdb): static
+    {
+        $this->tmdb = $tmdb;
 
         return $this;
     }
