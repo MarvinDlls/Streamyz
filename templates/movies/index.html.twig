@@ -12,7 +12,6 @@
 		<div class="flex items-center justify-center gap-8 m-5">
 			{% if not search %}
 				<h1 class="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">Films Populaires</h1>
-			{% endif %}
 			<form action="{{ path('movie_list') }}" method="GET" class="inline">
 				<select name="genre" onchange="this.form.submit()" class="p-2 rounded-lg border border-purple-400 bg-transparent text-purple-400 focus:outline-none focus:border-pink-400">
 					<option value="" disabled {% if not genre %} selected {% endif %}>Sélectionner un genre</option>
@@ -32,6 +31,7 @@
 					<option value="53" {% if genre == '53' %} selected {% endif %}>Thriller</option>
 				</select>
 			</form>
+			{% endif %}
 		</div>
 		<div class="movies grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7 gap-6 p-6">
 			{% for movie in movies %}
