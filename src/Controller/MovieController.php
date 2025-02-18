@@ -19,8 +19,8 @@ class MovieController extends AbstractController
     }
 
     #[Route('/movies', name: 'movie_list')]
-public function index(Request $request, PaginatorInterface $paginator): Response
-{
+    public function index(Request $request, PaginatorInterface $paginator): Response
+    {
     $search = $request->query->get('search');
     $genre = $request->query->get('genre');
     $page = $request->query->getInt('page', 1);
