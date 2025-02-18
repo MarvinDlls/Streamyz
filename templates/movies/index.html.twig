@@ -46,5 +46,6 @@
 				{% endif %}
 			{% endfor %}
 		</div>
+		{{ knp_pagination_render(movies, 'bundles/KnpPaginatorBundle/Pagination/custom_pagination.html.twig') }}
 	</body>
 {% endblock %}
