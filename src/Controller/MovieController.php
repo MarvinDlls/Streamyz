@@ -52,20 +52,34 @@ class MovieController extends AbstractController
     #[Route('/movie/{id}', name: 'movie_detail')]
     public function detail(int $id): Response
     {
-        $details = $this->tmdbApiService->fetchDetailMovie($id);
-        $videos = $this->tmdbApiService->videoMovie($id);
+        try {
+            $details = $this->tmdbApiService->fetchDetailMovie($id);
+            $videos = $this->tmdbApiService->videoMovie($id);
+            $reviews = $this->tmdbApiService->reviewMovie($id);
 
-        $trailer = null;
-        foreach ($videos['results'] ?? [] as $video) {
-            if ($video['type'] === 'Trailer' && $video['site'] === 'YouTube') {
-                $trailer = $video;
-                break;
+            $trailer = null;
+            foreach ($videos['results'] ?? [] as $video) {
+                if ($video['type'] === 'Trailer' && $video['site'] === 'YouTube') {
+                    $trailer = $video;
+                    break;
+                }
             }
-        }
 
-        return $this->render('movies/detail.html.twig', [
-            'details' => $details,
-            'trailer' => $trailer,
-        ]);
+            return $this->render('movies/detail.html.twig', [
+                'details' => $details,
+                'trailer' => $trailer,
+                'reviews' => $reviews['results'] ?? [],
+                'hasError' => false
+            ]);
+        } catch (\Exception $e) {
+
+            return $this->render('movies/detail.html.twig', [
+                'details' => null,
+                'trailer' => null,
+                'reviews' => [],
+                'hasError' => true,
+                'errorMessage' => 'Une erreur est survenue lors de la récupération des informations du film.'
+            ]);
+        }
     }
 }
