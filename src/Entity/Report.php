@@ -25,7 +25,7 @@ class Report
     private ?History $tmdb = null;
 
     #[ORM\PrePersist]
-    public function prePersist(): void
+    public function setCreatedAtValue()
     {
         $this->created_at = new \DateTimeImmutable();
     }

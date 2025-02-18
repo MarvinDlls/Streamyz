@@ -53,18 +53,17 @@ class History
     }
 
     #[ORM\PrePersist]
-    public function prePersist(): void
+    public function setCreatedAtValue()
     {
         $this->created_at = new \DateTimeImmutable();
         $this->updated_at = new \DateTimeImmutable();
     }
 
     #[ORM\PreUpdate]
-    public function preUpdate(): void
+    public function setUpdatedAtValue()
     {
         $this->updated_at = new \DateTimeImmutable();
     }
-
 
     public function getId(): ?int
     {
