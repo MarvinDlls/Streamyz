@@ -15,10 +15,10 @@ class History
     private ?int $id = null;
 
     #[ORM\Column(type: Types::GUID)]
-    private ?string $userId = null;
+    private ?string $uuid = null;
 
     #[ORM\Column(nullable: true)]
-    private ?array $movies = null;
+    private ?array $tmdbid = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
@@ -34,8 +34,8 @@ class History
 
     public function __construct()
     {
-        $this->userId = uniqid();
-        $this->movies = [];
+        $this->uuid = uniqid();
+        $this->tmdbid = [];
         $this->is_watched = false;
     }
 
@@ -58,26 +58,26 @@ class History
         return $this->id;
     }
 
-    public function getUserId(): ?string
+    public function getuuid(): ?string
     {
-        return $this->userId;
+        return $this->uuid;
     }
 
-    public function setUserId(string $userId): static
+    public function setuuid(string $uuid): static
     {
-        $this->userId = $userId;
+        $this->uuid = $uuid;
 
         return $this;
     }
 
-    public function getMovies(): ?array
+    public function gettmdbid(): ?array
     {
-        return $this->movies;
+        return $this->tmdbid;
     }
 
-    public function setMovies(?array $movies): static
+    public function settmdbid(?array $tmdbid): static
     {
-        $this->movies = $movies;
+        $this->tmdbid = $tmdbid;
 
         return $this;
     }
