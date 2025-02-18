@@ -5,9 +5,7 @@ namespace App\Entity;
 use App\Repository\HistoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use phpDocumentor\Reflection\Types\Nullable;
 
 #[ORM\Entity(repositoryClass: HistoryRepository::class)]
 class History
@@ -45,8 +43,7 @@ class History
     private ?string $uuid = null;
 
     #[ORM\Column]
-    private ?int $tmdb = null;
-
+    private array $tmdb = [];
 
     public function __construct()
     {
@@ -194,14 +191,24 @@ class History
         return $this;
     }
 
-    public function getTmdb(): ?int
+    public function getTmdb(): array
     {
         return $this->tmdb;
     }
 
-    public function setTmdb(int $tmdb): static
+    public function setTmdb(array $tmdb): static
     {
         $this->tmdb = $tmdb;
+
+        return $this;
+    }
+
+
+    public function addMovie(int $tmdbId): static
+    {
+        if (!in_array($tmdbId, $this->tmdb)) {
+            $this->tmdb[] = $tmdbId;
+        }
 
         return $this;
     }
