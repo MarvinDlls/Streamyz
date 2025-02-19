@@ -203,10 +203,10 @@ class History
     }
 
 
-    public function addMovie(int $tmdbId): static
+    public function addMovie(string $tmdbTitle): static
     {
-        if (!in_array($tmdbId, $this->tmdb)) {
-            $this->tmdb[] = $tmdbId;
+        if (!in_array($tmdbTitle, $this->tmdb)) {
+            $this->tmdb[] = $tmdbTitle;
         }
 
         return $this;
