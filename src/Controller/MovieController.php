@@ -146,7 +146,7 @@ class MovieController extends AbstractController
 
             // Ajout à l'historique
             $response = new Response();
-            $this->historyService->addHistory($details['title'], $response);
+            $this->historyService->addHistory($details['id'], $response);
 
             $trailer = $this->findTrailer($videos['results'] ?? []);
 

@@ -9,24 +9,33 @@
 
 {% block body %}
 	<body class="bg-gray-900 min-h-screen text-gray-100">
-	<div class="p-6">
+		<div class="p-6">
 			{% if history is not empty %}
 				<h2 class="text-3xl font-bold m-5 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">Historique</h2>
 				<div class='flex flex-row gap-6 p-6'>
 					{% for history in history %}
-						<div class="movie bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 cursor-pointer">
-							<h2 class="text-lg m-3 text-center font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">{{ history|slice(0,20) }}</h2>
-						</div>
+						<a href="{{ path('movie_detail', {id: history}) }}">
+							<div class="movie bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 cursor-pointer">
+								<h2 class="text-lg m-3 text-center font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+									{% for movie in movies %}
+										{% if history == movie.id %}
+											{{ movie.title }}
+										{% endif %}
+									{% endfor %}
+								</h2>
+							</div>
+						</a>
 					{% endfor %}
 				</div>
 			</div>
-			{% endif %}
-			{% if not search %}
-		<div class="flex items-center justify-center gap-8 m-5">
-				{% if not genre %}	
+		{% endif %}
+		{% if not search %}
+			<div class="flex items-center justify-center gap-8 m-5">
+				{% if not genre %}
 					<h1 class="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">Films Populaires</h1>
 				{% else %}
-					<h1 class="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">{{ selectedGenre }}</h1> {#faire l'importation depuis la bdd avec une nouvelle table genre#}
+					<h1 class="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">{{ selectedGenre }}</h1>
+					{#faire l'importation depuis la bdd avec une nouvelle table genre#}
 				{% endif %}
 				<form action="{{ path('movie_list') }}" method="GET" class="inline">
 					<select name="genre" onchange="this.form.submit()" class="p-2 cursor-pointer rounded-lg border border-purple-400 bg-transparent text-purple-400 focus:outline-none focus:border-pink-400">
@@ -52,8 +61,8 @@
 						Voir tous les films
 					</a>
 				</button>
-		</div>
-			{% endif %}
+			</div>
+		{% endif %}
 		<div class="movies grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7 gap-6 p-6">
 			{% for movie in movies %}
 				{% if movie.release_date != null %}
