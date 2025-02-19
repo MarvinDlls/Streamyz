@@ -62,7 +62,7 @@ class MovieController extends AbstractController
         return $response;
     }
 
-    #[Route('/movie/{id}', name: 'movie_detail', methods: ['GET'])]
+    #[Route('/movie/{id}', name: 'movie_detail', methods: ['GET', 'POST'])]
     public function detail(int $id, Request $request): Response
     {
         $response = new Response();
