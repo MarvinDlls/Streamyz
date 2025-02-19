@@ -2,21 +2,26 @@
 
 namespace App\Controller;
 
+use App\Entity\Report;
+use App\Service\HistoryService;
 use App\Service\TmdbApiService;
+use App\Repository\HistoryRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class MovieController extends AbstractController
 {
-    private TmdbApiService $tmdbApiService;
-
-    public function __construct(TmdbApiService $tmdbApiService)
-    {
-        $this->tmdbApiService = $tmdbApiService;
-    }
+    public function __construct(
+        private TmdbApiService $tmdbApiService,
+        private HistoryRepository $historyRepository,
+        private HistoryService $historyService,
+        private EntityManagerInterface $entityManager
+    ) {}
 
     private function getMovies(Request $request, PaginatorInterface $paginator): array
     {
@@ -34,11 +39,14 @@ class MovieController extends AbstractController
             }
 
             $results = $movies['results'] ?? [];
+            $user = $this->historyService->getUser();
+            $history = $this->historyRepository->findOneBy(['user' => $user]);
 
             return [
                 'movies' => $paginator->paginate($results, $page, 14),
                 'search' => $search,
                 'genre' => $genre,
+                'history' => $history ? $history->getTmdb() : [],
                 'error' => null
             ];
         } catch (\Exception $e) {
@@ -46,6 +54,7 @@ class MovieController extends AbstractController
                 'movies' => [],
                 'search' => $search,
                 'genre' => $genre,
+                'history' => [],
                 'error' => 'Une erreur est survenue lors de la récupération des films.'
             ];
         }
@@ -54,19 +63,32 @@ class MovieController extends AbstractController
     #[Route('/', name: 'movie_list')]
     public function index(Request $request, PaginatorInterface $paginator): Response
     {
-        return $this->render('movies/index.html.twig', $this->getMovies($request, $paginator));
+        $response = $this->render('movies/index.html.twig', $this->getMovies($request, $paginator));
+
+        // Gestion du cookie utilisateur
+        if (!$request->cookies->has('user_uuid')) {
+            $user = $this->historyService->getUser();
+            $cookie = Cookie::create('user_uuid', $user)
+                ->withExpires(new \DateTime('+1 year'))
+                ->withPath('/')
+                ->withSecure($request->isSecure())
+                ->withHttpOnly(true);
+            $response->headers->setCookie($cookie);
+        }
+
+        return $response;
     }
 
     #[Route('/movies/all', name: 'movie_all')]
     public function tous(Request $request, PaginatorInterface $paginator): Response
     {
         try {
-            $maxPages = 10; // Limiter à 10 pages pour éviter un temps de chargement trop long
-            $movies = $this->tmdbApiService->fetchAllMovies($maxPages); // Récupérer tous les films
+            $maxPages = 10;
+            $movies = $this->tmdbApiService->fetchAllMovies($maxPages);
             $pagination = $paginator->paginate(
-                $movies, // Les données à paginer
-                $request->query->getInt('page', 1), // Page actuelle
-                14 // Nombre d'éléments par page
+                $movies,
+                $request->query->getInt('page', 1),
+                14
             );
 
             return $this->render('movies/tous.html.twig', [
@@ -85,29 +107,30 @@ class MovieController extends AbstractController
         }
     }
 
-
-    #[Route('/movie/{id}', name: 'movie_detail')]
-    public function detail(int $id): Response
+    #[Route('/movie/{id}', name: 'movie_detail', methods: ['GET', 'POST'])]
+    public function detail(int $id, Request $request): Response
     {
+        if ($request->isMethod('POST')) {
+            return $this->handleMovieReport($id);
+        }
+
         try {
             $details = $this->tmdbApiService->fetchDetailMovie($id);
             $videos = $this->tmdbApiService->videoMovie($id);
             $reviews = $this->tmdbApiService->reviewMovie($id);
 
-            $trailer = null;
-            foreach ($videos['results'] ?? [] as $video) {
-                if ($video['type'] === 'Trailer' && $video['site'] === 'YouTube') {
-                    $trailer = $video;
-                    break;
-                }
-            }
+            // Ajout à l'historique
+            $response = new Response();
+            $this->historyService->addHistory($details['title'], $response);
+
+            $trailer = $this->findTrailer($videos['results'] ?? []);
 
             return $this->render('movies/detail.html.twig', [
                 'details' => $details,
                 'trailer' => $trailer,
                 'reviews' => $reviews['results'] ?? [],
                 'hasError' => false
-            ]);
+            ], $response);
         } catch (\Exception $e) {
             return $this->render('movies/detail.html.twig', [
                 'details' => null,
@@ -117,5 +140,29 @@ class MovieController extends AbstractController
                 'errorMessage' => 'Une erreur est survenue lors de la récupération des informations du film.'
             ]);
         }
+    }
+
+    private function handleMovieReport(int $id): Response
+    {
+        $report = new Report();
+        $report->setTmdb($id);
+        $report->setUser($this->historyService->getUser());
+        $report->setCreatedAt(new \DateTimeImmutable());
+        
+        $this->entityManager->persist($report);
+        $this->entityManager->flush();
+        
+        $this->addFlash('success', 'Votre signalement a été pris en compte');
+        return $this->redirectToRoute('movie_list');
+    }
+
+    private function findTrailer(array $videos): ?array
+    {
+        foreach ($videos as $video) {
+            if ($video['type'] === 'Trailer' && $video['site'] === 'YouTube') {
+                return $video;
+            }
+        }
+        return null;
     }
 }
