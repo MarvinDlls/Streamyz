@@ -1,33 +1,49 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}
-    Tous les films
+	Tous les films
 {% endblock %}
 
 {% block body %}
 	<body class="bg-gray-900 min-h-screen text-gray-100">
-    <div class="p-6">
-        <button class="cursor-pointer transform active:scale-75 transition-transform bg-gray-800 p-2 rounded-full shadow-md hover:bg-gray-700">
-            <a href="{{ path('movie_list') }}">
-                {{ ux_icon('nrk:back', {height: '24px', width: '24px', color: 'white'}) }}
-            </a>
-        </button>
-    </div>
+		<div class="p-6">
+			<button class="cursor-pointer transform active:scale-75 transition-transform bg-gray-800 p-2 rounded-full shadow-md hover:bg-gray-700">
+				<a href="{{ path('movie_list') }}">
+					{{ ux_icon('nrk:back', {height: '24px', width: '24px', color: 'white'}) }}
+				</a>
+			</button>
+		</div>
 
-    <div class="movies grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7 gap-6 p-6">
-        {% for movie in movies %}
-            {% if movie.release_date != null %}
-                <a href="{{ path('movie_detail', {id: movie.id}) }}">
-                    <div class="movie bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 cursor-pointer">
-                        <img class="w-full h-48 object-cover sm:h-64 md:h-72 lg:h-80" src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}">
-                        <h2 class="text-sm sm:text-base md:text-lg m-2 text-center font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">{{ movie.title|slice(0,16) }}</h2>
-                        <p class="text-sm sm:text-base md:text-lg m-2 text-center font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">({{ movie.release_date|slice(0,4) }})</p>
-                    </div>
-                </a>
-            {% endif %}
-        {% endfor %}
-    </div>
-</body>
+		<div class="movies grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7 gap-6 p-6">
+			{% for movie in movies %}
+				{% if movie.release_date != null %}
+					<a href="{{ path('movie_detail', {id: movie.id}) }}">
+						<div class="movie bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 cursor-pointer relative">
+							<img
+							class="w-full h-48 object-cover sm:h-64 md:h-72 lg:h-80" src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}">
+
+							{# Cercle de progression #}
+							<div class="absolute top-2 right-2">
+								<div class="w-10 h-10 rounded-full bg-gray-900 border-gray-700 flex items-center justify-center relative">
+									<svg class="w-10 h-10 absolute top-0 left-0 transform -rotate-90" viewbox="0 0 36 36">
+										<circle cx="18" cy="18" r="15.91549430918954" fill="transparent" stroke="#1a1a1a" stroke-width="3"></circle>
+										<circle cx="18" cy="18" r="15.91549430918954" fill="transparent" stroke="{% if movie.vote_average >= 7 %}#22c55e{% elseif movie.vote_average >= 5 %}#eab308{% else %}#ef4444{% endif %}" stroke-width="3" stroke-dasharray="{{ (movie.vote_average * 10)|round }}, 100" stroke-linecap="round" class="progress-circle"></circle>
+									</svg>
+									<span class="text-xs font-bold z-10 {% if movie.vote_average >= 7 %}text-green-500{% elseif movie.vote_average >= 5 %}text-yellow-500{% else %}text-red-500{% endif %}">
+										{{ (movie.vote_average * 10)|round }}%
+									</span>
+								</div>
+							</div>
+
+							<h2 class="text-sm sm:text-base md:text-lg m-2 text-center font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">{{ movie.title|slice(0,16) }}</h2>
+							<p class="text-sm sm:text-base md:text-lg m-2 text-center font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">({{movie.release_date|slice(0,4)}})</p>
+						</div>
+
+					</a>
+				{% endif %}
+			{% endfor %}
+		</div>
+	</body>
 
 	{{ knp_pagination_render(movies, 'bundles/KnpPaginatorBundle/Pagination/custom_pagination.html.twig') }}
 {% endblock %}

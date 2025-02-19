@@ -1,1 +1,5 @@
 @import "tailwindcss";
+
+.progress-circle {
+    transition: stroke-dasharray 0.3s ease;
+}
