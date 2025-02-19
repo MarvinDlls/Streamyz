@@ -11,7 +11,11 @@
 	<body class="bg-gray-900 min-h-screen text-gray-100">
 		<div class="flex items-center justify-center gap-8 m-5">
 			{% if not search %}
-				<h1 class="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">Films Populaires</h1>
+				{% if not genre %}	
+					<h1 class="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">Films Populaires</h1>
+				{% else %}
+					<h1 class="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">{{genre}}</h1> {#faire l'importation depuis la bdd avec une nouvelle table genre#}
+				{% endif %}
 				<form action="{{ path('movie_list') }}" method="GET" class="inline">
 					<select name="genre" onchange="this.form.submit()" class="p-2 cursor-pointer rounded-lg border border-purple-400 bg-transparent text-purple-400 focus:outline-none focus:border-pink-400">
 						<option value="" disabled {% if not genre %} selected {% endif %}>Sélectionner un genre</option>
