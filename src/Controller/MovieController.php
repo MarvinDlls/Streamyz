@@ -63,7 +63,32 @@ class MovieController extends AbstractController
     #[Route('/', name: 'movie_list')]
     public function index(Request $request, PaginatorInterface $paginator): Response
     {
-        $response = $this->render('movies/index.html.twig', $this->getMovies($request, $paginator));
+        $genres = [
+            "28" => "Action",
+            "12" => "Aventure",
+            "10752" => "Guerre",
+            "99" => "Documentaire",
+            "18" => "Drame",
+            "10751" => "Famille",
+            "14" => "Fantasy",
+            "36" => "Histoire",
+            "27" => "Horreur",
+            "10402" => "Musique",
+            "9648" => "Mystère",
+            "10749" => "Romance",
+            "878" => "Science-Fiction",
+            "53" => "Thriller",
+        ];
+
+        $genreId = $request->query->get('genre');
+        $selectedGenre = $genres[$genreId] ?? null;
+
+        $moviesData = $this->getMovies($request, $paginator);
+
+        $moviesData['selectedGenre'] = $selectedGenre;
+        $moviesData['genres'] = $genres;
+
+        $response = $this->render('movies/index.html.twig', $moviesData);
 
         // Gestion du cookie utilisateur
         if (!$request->cookies->has('user_uuid')) {
