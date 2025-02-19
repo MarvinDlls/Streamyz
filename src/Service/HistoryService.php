@@ -22,18 +22,18 @@ class HistoryService
     }
 
     // Crée ou récupèrer l'ID de l'utilisateur
-    public function getUuid(): string
+    public function getUser(): string
     {
         $request = $this->rs->getCurrentRequest();
-        $uuid = $request->cookies->get('user_uuid');
+        $userId = $request->cookies->get('user_uuid');
 
-        if (!$uuid) {
-            $uuid = Uuid::v4();
+        if (!$userId) {
+            $userId = Uuid::v4();
 
             $history = new History();
             $history
-                ->setIpAdress($request->getClientIp())
-                ->setUuid($uuid)
+                ->setIpAddress($request->getClientIp())
+                ->setUser($userId)
                 ->setCreatedAt(new \DateTimeImmutable())
                 ->setUpdatedAt(new \DateTimeImmutable())
             ;
@@ -42,19 +42,22 @@ class HistoryService
             $this->em->flush();
         }
 
-        return $uuid;
+        return $userId;
     }
 
     public function addHistory(string $movieTitle, Response $response): void
     {
-        $uuid = $this->getUuid($response);
+        $userId = $this->getUser($response);
         $hr = $this->em->getRepository(History::class);
 
-        $history = $hr->findOneBy(['uuid' => $uuid]);
+        $history = $hr->findOneBy(['user' => $userId]);
 
         if (!$history) {
             $history = new History();
-            $history->setUuid($uuid);
+            $history
+                ->setUser($userId)
+                ->setCreatedAt(new \DateTimeImmutable())
+            ;
         }
 
         $history
