@@ -10,6 +10,45 @@
         {% block javascripts %}
             {% block importmap %}{{ importmap('app') }}{% endblock %}
             <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+            <script>
+function toggleFavorite(event, movieId) {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    fetch(`/favorites/toggle/${movieId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const icon = document.getElementById(`favorite-${movieId}`);
+        if (data.status === 'added') {
+            icon.style.color = '#e879f9'; // Couleur rose/purple quand ajouté
+        } else {
+            icon.style.color = '#a78bfa'; // Couleur purple plus claire quand retiré
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+// Vérifier l'état initial des favoris
+document.addEventListener('DOMContentLoaded', function() {
+    const movieCards = document.querySelectorAll('[data-movie-id]');
+    movieCards.forEach(card => {
+        const movieId = card.dataset.movieId;
+        fetch(`/favorites/check/${movieId}`)
+            .then(response => response.json())
+            .then(data => {
+                const icon = document.getElementById(`favorite-${movieId}`);
+                if (data.isFavorite) {
+                    icon.style.color = '#e879f9';
+                }
+            });
+    });
+});
+</script>
         {% endblock %}
     </head>
     <body>
