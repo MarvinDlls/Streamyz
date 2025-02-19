@@ -36,7 +36,7 @@ class MovieController extends AbstractController
             $results = $movies['results'] ?? [];
 
             return [
-                'movies' => $paginator->paginate($results, $page, 12),
+                'movies' => $paginator->paginate($results, $page, 14),
                 'search' => $search,
                 'genre' => $genre,
                 'error' => null
@@ -51,7 +51,7 @@ class MovieController extends AbstractController
         }
     }
 
-    #[Route('/movies', name: 'movie_list')]
+    #[Route('/', name: 'movie_list')]
     public function index(Request $request, PaginatorInterface $paginator): Response
     {
         return $this->render('movies/index.html.twig', $this->getMovies($request, $paginator));
