@@ -25,22 +25,10 @@ class History
     private ?bool $is_watched = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $ip_adress = null;
-
-    /**
-     * @var Collection<int, Report>
-     */
-    #[ORM\OneToMany(targetEntity: Report::class, mappedBy: 'uuid', orphanRemoval: true)]
-    private Collection $reportsUser;
-
-    /**
-     * @var Collection<int, Report>
-     */
-    #[ORM\OneToMany(targetEntity: Report::class, mappedBy: 'tmdb', orphanRemoval: true)]
-    private Collection $reportsMovie;
+    private ?string $ip_address = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $uuid = null;
+    private ?string $user = null;
 
     #[ORM\Column]
     private array $tmdb = [];
@@ -48,19 +36,17 @@ class History
     public function __construct()
     {
         $this->is_watched = false;
-        $this->reportsUser = new ArrayCollection();
-        $this->reportsMovie = new ArrayCollection();
     }
 
     #[ORM\PrePersist]
-    public function setCreatedAtValue()
+    public function prePersist()
     {
         $this->created_at = new \DateTimeImmutable();
         $this->updated_at = new \DateTimeImmutable();
     }
 
     #[ORM\PreUpdate]
-    public function setUpdatedAtValue()
+    public function preUpdate()
     {
         $this->updated_at = new \DateTimeImmutable();
     }
@@ -106,86 +92,26 @@ class History
         return $this;
     }
 
-    public function getIpAdress(): ?string
+    public function getIpAddress(): ?string
     {
-        return $this->ip_adress;
+        return $this->ip_address;
     }
 
-    public function setIpAdress(string $ip_adress): static
+    public function setIpAddress(string $ip_address): static
     {
-        $this->ip_adress = $ip_adress;
+        $this->ip_address = $ip_address;
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, Report>
-     */
-    public function getReportsUser(): Collection
+    public function getUser(): ?string
     {
-        return $this->reportsUser;
+        return $this->user;
     }
 
-    public function addReportsUser(Report $reportsUser): static
+    public function setUser(string $user): static
     {
-        if (!$this->reportsUser->contains($reportsUser)) {
-            $this->reportsUser->add($reportsUser);
-            $reportsUser->setUuid($this);
-        }
-
-        return $this;
-    }
-
-    public function removeReportsUser(Report $reportsUser): static
-    {
-        if ($this->reportsUser->removeElement($reportsUser)) {
-            // set the owning side to null (unless already changed)
-            if ($reportsUser->getUuid() === $this) {
-                $reportsUser->setUuid(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Report>
-     */
-    public function getReportsMovie(): Collection
-    {
-        return $this->reportsMovie;
-    }
-
-    public function addReportsMovie(Report $reportsMovie): static
-    {
-        if (!$this->reportsMovie->contains($reportsMovie)) {
-            $this->reportsMovie->add($reportsMovie);
-            $reportsMovie->setTmdb($this);
-        }
-
-        return $this;
-    }
-
-    public function removeReportsMovie(Report $reportsMovie): static
-    {
-        if ($this->reportsMovie->removeElement($reportsMovie)) {
-            // set the owning side to null (unless already changed)
-            if ($reportsMovie->getTmdb() === $this) {
-                $reportsMovie->setTmdb(null);
-            }
-        }
-
-        return $this;
-    }
-
-    public function getUuid(): ?string
-    {
-        return $this->uuid;
-    }
-
-    public function setUuid(string $uuid): static
-    {
-        $this->uuid = $uuid;
+        $this->user = $user;
 
         return $this;
     }
@@ -201,7 +127,6 @@ class History
 
         return $this;
     }
-
 
     public function addMovie(string $tmdbTitle): static
     {
