@@ -20,8 +20,9 @@
 					{% endfor %}
 				</div>
 			</div>
-		<div class="flex items-center justify-center gap-8 m-5">
+			{% endif %}
 			{% if not search %}
+		<div class="flex items-center justify-center gap-8 m-5">
 				{% if not genre %}	
 					<h1 class="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">Films Populaires</h1>
 				{% else %}
@@ -51,8 +52,8 @@
 						Voir tous les films
 					</a>
 				</button>
-			{% endif %}
 		</div>
+			{% endif %}
 		<div class="movies grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7 gap-6 p-6">
 			{% for movie in movies %}
 				{% if movie.release_date != null %}
@@ -77,7 +78,6 @@
 							<h2 class="text-sm sm:text-base md:text-lg m-2 text-center font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">{{ movie.title|slice(0,16) }}</h2>
 							<p class="text-sm sm:text-base md:text-lg m-2 text-center font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">({{movie.release_date|slice(0,4)}})</p>
 						</div>
-
 					</a>
 				{% endif %}
 			{% endfor %}
