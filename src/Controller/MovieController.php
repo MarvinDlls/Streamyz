@@ -60,9 +60,11 @@ class MovieController extends AbstractController
     {
         $response = new Response();
 
-        $this->hs->addHistory($id, $response);
         $details = $this->tmdbApiService->fetchDetailMovie($id);
         $videos = $this->tmdbApiService->videoMovie($id);
+
+        $movieTitle = $details['title'];
+        $this->hs->addHistory($movieTitle, $response);
 
         $trailer = null;
         foreach ($videos['results'] ?? [] as $video) {
