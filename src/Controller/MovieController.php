@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\History;
+use App\Repository\HistoryRepository;
 use App\Service\HistoryService;
 use App\Service\TmdbApiService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,16 +14,16 @@ use Symfony\Component\Routing\Annotation\Route;
 class MovieController extends AbstractController
 {
     private TmdbApiService $tmdbApiService;
-    private HistoryService $historyService;
+    private HistoryRepository $hr;
 
-    public function __construct(TmdbApiService $tmdbApiService, HistoryService $historyService)
+    public function __construct(TmdbApiService $tmdbApiService, HistoryService $hs)
     {
         $this->tmdbApiService = $tmdbApiService;
-        $this->historyService = $historyService;
+        $this->hr = $hs;
     }
 
-    #[Route('/movies', name: 'movie_list')]
-    public function index(Request $request): Response
+    #[Route('/movies', name: 'movie_list', methods: ['GET'])]
+    public function index(Request $request, Response $response): Response
     {
         $search = $request->query->get('search');
 
@@ -31,17 +33,22 @@ class MovieController extends AbstractController
             $movies = $this->tmdbApiService->fetchPopularMovies();
         }
 
+        $uuid = $this->hr->getUuid($response);
+        $history = $this->hr->findBy(['uuid' => $uuid]);
+
         return $this->render('movies/index.html.twig', [
             'movies' => $movies['results'],
-            'search' => $search
+            'search' => $search,
+            'history' => $history
         ]);
     }
-    #[Route('/movie/{id}', name: 'movie_detail')]
+
+    #[Route('/movie/{id}', name: 'movie_detail', methods: ['GET'])]
     public function detail(int $id): Response
     {
         $response = new Response();
 
-        $this->historyService->addHistory($id, $response);
+        $this->hr->addHistory($id, $response);
         $details = $this->tmdbApiService->fetchDetailMovie($id);
         $videos = $this->tmdbApiService->videoMovie($id);
 
