@@ -21,3 +21,12 @@
 .animate-fadeInOut {
     animation: fadeInOut 5s ease forwards;
 }
+
+.favorite-icon {
+    color: #a78bfa; 
+    transition: color 0.3s ease-in-out; 
+}
+
+.favorite-active {
+    color: #16A34A !important; 
+}
