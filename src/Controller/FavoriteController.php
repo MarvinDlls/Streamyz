@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 #[Route('/favorites')]
 class FavoriteController extends AbstractController
@@ -26,13 +27,9 @@ class FavoriteController extends AbstractController
     public function index(): Response
     {
         try {
-            // Récupérer l'utilisateur actuel via le service
             $user = $this->historyService->getUser();
-            
-            // Récupérer tous les favoris de l'utilisateur
             $favorites = $this->favoriteRepository->findBy(['user' => $user]);
             
-            // Récupérer les détails des films depuis TMDB
             $movies = [];
             foreach ($favorites as $favorite) {
                 $movieDetails = $this->tmdbApiService->fetchDetailMovie($favorite->getTmdb());
@@ -57,30 +54,26 @@ class FavoriteController extends AbstractController
     }
 
     #[Route('/toggle/{tmdbId}', name: 'favorite_toggle', methods: ['POST'])]
-    public function toggle(int $tmdbId): Response
+    public function toggle(int $tmdbId): JsonResponse
     {
         try {
             $user = $this->historyService->getUser();
             
-            // Vérifier si le film est déjà en favoris
             $existingFavorite = $this->favoriteRepository->findOneBy([
                 'user' => $user,
                 'tmdb' => $tmdbId
             ]);
 
             if ($existingFavorite) {
-                // Si existe déjà, on supprime
                 $this->entityManager->remove($existingFavorite);
                 $this->entityManager->flush();
                 
-                $this->addFlash('success', 'Film retiré des favoris');
                 return $this->json([
                     'status' => 'removed',
                     'message' => 'Film retiré des favoris'
                 ]);
             }
 
-            // Si n'existe pas, on ajoute
             $favorite = new Favorite();
             $favorite->setUser($user);
             $favorite->setTmdb($tmdbId);
@@ -90,7 +83,6 @@ class FavoriteController extends AbstractController
             $this->entityManager->persist($favorite);
             $this->entityManager->flush();
 
-            $this->addFlash('success', 'Film ajouté aux favoris');
             return $this->json([
                 'status' => 'added',
                 'message' => 'Film ajouté aux favoris'
@@ -105,7 +97,7 @@ class FavoriteController extends AbstractController
     }
 
     #[Route('/check/{tmdbId}', name: 'favorite_check', methods: ['GET'])]
-    public function check(int $tmdbId): Response
+    public function check(int $tmdbId): JsonResponse
     {
         try {
             $user = $this->historyService->getUser();
@@ -127,14 +119,45 @@ class FavoriteController extends AbstractController
         }
     }
 
+    #[Route('/check-multiple', name: 'check_multiple_favorites', methods: ['POST'])]
+    public function checkMultipleFavorites(Request $request): JsonResponse
+    {
+        try {
+            $data = json_decode($request->getContent(), true);
+            $movieIds = $data['movieIds'] ?? [];
+
+            $user = $this->historyService->getUser();
+            if (!$user) {
+                return $this->json(['favorites' => []]);
+            }
+
+            $favorites = $this->favoriteRepository->createQueryBuilder('f')
+                ->select('f.tmdb')
+                ->where('f.user = :user')
+                ->andWhere('f.tmdb IN (:movieIds)')
+                ->setParameter('user', $user)
+                ->setParameter('movieIds', $movieIds)
+                ->getQuery()
+                ->getResult();
+
+            $favoriteIds = array_column($favorites, 'tmdb');
+
+            return $this->json(['favorites' => $favoriteIds]);
+        } catch (\Exception $e) {
+            return $this->json([
+                'status' => 'error',
+                'message' => 'Une erreur est survenue'
+            ], 500);
+        }
+    }
+
     #[Route('/remove/{id}', name: 'favorite_remove', methods: ['DELETE'])]
-    public function remove(Favorite $favorite): Response
+    public function remove(Favorite $favorite): JsonResponse
     {
         try {
             $this->entityManager->remove($favorite);
             $this->entityManager->flush();
 
-            $this->addFlash('success', 'Film retiré des favoris');
             return $this->json([
                 'status' => 'success',
                 'message' => 'Favori supprimé avec succès'
