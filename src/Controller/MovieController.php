@@ -46,7 +46,7 @@ class MovieController extends AbstractController
                 'movies' => $paginator->paginate($results, $page, 14),
                 'search' => $search,
                 'genre' => $genre,
-                'history' => $history ? $history->getTmdb() : [],
+                'history' => $history,
                 'error' => null
             ];
         } catch (\Exception $e) {
@@ -146,7 +146,7 @@ class MovieController extends AbstractController
 
             // Ajout à l'historique
             $response = new Response();
-            $this->historyService->addHistory($details['id'], $response);
+            $this->historyService->addHistory($details['id'], $details['title'], $response);
 
             $trailer = $this->findTrailer($videos['results'] ?? []);
 
