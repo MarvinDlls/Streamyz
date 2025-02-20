@@ -21,9 +21,6 @@ class History
     #[ORM\Column]
     private ?\DateTimeImmutable $updated_at = null;
 
-    #[ORM\Column]
-    private ?bool $is_watched = null;
-
     #[ORM\Column(length: 255)]
     private ?string $ip_address = null;
 
@@ -33,10 +30,8 @@ class History
     #[ORM\Column]
     private array $tmdb = [];
 
-    public function __construct()
-    {
-        $this->is_watched = false;
-    }
+    #[ORM\Column]
+    private array $title = [];
 
     #[ORM\PrePersist]
     public function prePersist()
@@ -76,18 +71,6 @@ class History
     public function setUpdatedAt(\DateTimeImmutable $updated_at): static
     {
         $this->updated_at = $updated_at;
-
-        return $this;
-    }
-
-    public function isWatched(): ?bool
-    {
-        return $this->is_watched;
-    }
-
-    public function setIsWatched(bool $is_watched): static
-    {
-        $this->is_watched = $is_watched;
 
         return $this;
     }
@@ -133,6 +116,18 @@ class History
         if (!in_array($tmdbTitle, $this->tmdb)) {
             $this->tmdb[] = $tmdbTitle;
         }
+
+        return $this;
+    }
+
+    public function getTitle(): array
+    {
+        return $this->title;
+    }
+
+    public function setTitle(array $title): static
+    {
+        $this->title = $title;
 
         return $this;
     }
