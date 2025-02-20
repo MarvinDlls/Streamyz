@@ -45,7 +45,7 @@ class HistoryService
         return $userId;
     }
 
-    public function addHistory(string $movieTitle, Response $response): void
+    public function addHistory(string $tmdbId, string $tmdbTitle, Response $response): void
     {
         $userId = $this->getUser($response);
         $hr = $this->em->getRepository(History::class);
@@ -61,7 +61,7 @@ class HistoryService
         }
 
         $history
-            ->addMovie($movieTitle)
+            ->addMovie($tmdbId, $tmdbTitle)
             ->setUpdatedAt(new \DateTimeImmutable())
         ;
         $this->em->persist($history);
