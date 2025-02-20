@@ -1,58 +1,69 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-        {% block stylesheets %}
-        {% endblock %}
+	<head>
+		<meta charset="UTF-8">
+		<title>
+			{% block title %}Welcome!
+			{% endblock %}
+		</title>
+		<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>"> {% block stylesheets %}{% endblock %}
 
-        {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
-            <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
-            <script>
-function toggleFavorite(event, movieId) {
-    event.preventDefault();
-    event.stopPropagation();
-    
-    fetch(`/favorites/toggle/${movieId}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        const icon = document.getElementById(`favorite-${movieId}`);
-        if (data.status === 'added') {
-            icon.style.color = '#e879f9'; // Couleur rose/purple quand ajouté
-        } else {
-            icon.style.color = '#a78bfa'; // Couleur purple plus claire quand retiré
-        }
-    })
-    .catch(error => console.error('Error:', error));
-}
+		{% block javascripts %}
+			{% block importmap %}
+				{{ importmap('app') }}
+			{% endblock %}
+			<script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+			<script>
+				document.addEventListener('DOMContentLoaded', function () {
+                const movieCards = document.querySelectorAll('[data-movie-id]');
 
-// Vérifier l'état initial des favoris
-document.addEventListener('DOMContentLoaded', function() {
-    const movieCards = document.querySelectorAll('[data-movie-id]');
-    movieCards.forEach(card => {
-        const movieId = card.dataset.movieId;
-        fetch(`/favorites/check/${movieId}`)
-            .then(response => response.json())
-            .then(data => {
-                const icon = document.getElementById(`favorite-${movieId}`);
-                if (data.isFavorite) {
-                    icon.style.color = '#e879f9';
+                if (movieCards.length > 0) { // On récupère tous les IDs des films affichés
+                const movieIds = Array.from(movieCards).map(card => card.dataset.movieId);
+
+                fetch(`/favorites/check-multiple`, {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json'
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify(
+                {movieIds: movieIds}
+                ) // Envoie tous les IDs d'un coup
+                }).then(response => response.json()).then(data => { // Met à jour l'icône de chaque film selon la réponse du serveur
+                data.favorites.forEach(movieId => {
+                const icon = document.getElementById (`favorite-${movieId}`);
+                if (icon) {
+                icon.classList.add('favorite-active');
                 }
-            });
-    });
-});
-</script>
-        {% endblock %}
-    </head>
-    <body>
-        {% include 'components/nav.html.twig' %}
-        {% block body %}{% endblock %}
-    </body>
+                });
+                }).catch(error => console.error('Error fetching favorites:', error));
+                }
+                });
+
+                function toggleFavorite(event, movieId) {
+                event.preventDefault();
+                event.stopPropagation();
+
+                fetch (`/favorites/toggle/${movieId}`, {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json'
+                },
+                credentials: 'same-origin'
+                }).then(response => response.json()).then(data => {
+                const icon = document.getElementById (`favorite-${movieId}`);
+                if (data.status === 'added') {
+                icon.classList.add('favorite-active');
+                } else {
+                icon.classList.remove('favorite-active');
+                }
+                }).catch(error => console.error('Error:', error));
+                }
+			</script>
+		{% endblock %}
+	</head>
+	<body>
+		{% include 'components/nav.html.twig' %}
+		{% block body %}{% endblock %}
+	</body>
 </html>
