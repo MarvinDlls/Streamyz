@@ -12,7 +12,7 @@
 		<div class="p-6">
 			{% if history.tmdb != [] %}
 				<h2 class="text-3xl font-bold m-5 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">Historique</h2>
-				<div class='flex flex-row justify-center gap-6 p-6'>
+				<div class='flex flex-row flex-wrap justify-center gap-6 p-6'>
 
 			{% for histori in history.tmdb %}
 				{% set title = history.title[loop.index0] %}
@@ -27,7 +27,7 @@
 			{% endif %}
 			</div>
 		{% if not search %}
-			<div class="flex items-center justify-center gap-8 m-5">
+			<div class="flex items-center justify-center flex-col lg:flex-row gap-8 m-5">
 				{% if not genre %}
 					<h1 class="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">Films Populaires</h1>
 				{% else %}
@@ -53,7 +53,7 @@
 						<option value="53" {% if genre == '53' %} selected {% endif %}>Thriller</option>
 					</select>
 				</form>
-				
+
 			</div>
 		{% endif %}
 		<div class="movies grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7 gap-6 p-6">
@@ -78,7 +78,7 @@
 							</div>
 
 							<div class="absolute top-2 left-2">
-								<button onclick="toggleFavorite(event, {{ movie.id }})" 
+								<button onclick="toggleFavorite(event, {{ movie.id }})"
 										class="w-10 h-10 rounded-full bg-gray-900 border-gray-700 flex items-center justify-center hover:bg-gray-800 transition-colors cursor-pointer"
 										data-movie-id="{{ movie.id }}">
 									<span class="favorite-icon text-purple-400" id="favorite-{{ movie.id }}">
