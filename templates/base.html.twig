@@ -60,6 +60,18 @@
                 }).catch(error => console.error('Error:', error));
                 }
 			</script>
+            <script>
+			function removeFavorite(event, favoriteId) {
+            event.preventDefault();
+            fetch (`/favorites/remove/${favoriteId}`, {method: 'DELETE'}).then(response => response.json()).then(data => {
+            if (data.status === 'success') {
+            location.reload();
+            } else {
+            alert('Erreur lors de la suppression');
+            }
+            });
+            }
+		    </script>
 		{% endblock %}
 	</head>
 	<body>
