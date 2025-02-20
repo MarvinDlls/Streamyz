@@ -169,16 +169,22 @@ class MovieController extends AbstractController
 
     private function handleMovieReport(int $id): Response
     {
-        $report = new Report();
-        $report->setTmdb($id);
-        $report->setUser($this->historyService->getUser());
-        $report->setCreatedAt(new \DateTimeImmutable());
+        $user = $this->historyService->getUser();
+        $reportExist = $this->entityManager->getRepository(Report::class)->findOneBy(['user' => $user, 'tmdb' => $id]);
 
-        $this->entityManager->persist($report);
-        $this->entityManager->flush();
+        if ($reportExist) {
+            $this->addFlash('warning', 'Votre signalement a déjà été pris en compte');
+        } else {
+            $report = new Report();
+            $report->setTmdb($id);
+            $report->setUser($this->historyService->getUser());
+            $report->setCreatedAt(new \DateTimeImmutable());
 
-        $this->addFlash('success', 'Votre signalement a été pris en compte');
-        return $this->redirectToRoute('movie_list');
+            $this->entityManager->persist($report);
+            $this->entityManager->flush();
+            $this->addFlash('success', 'Votre signalement a été pris en compte');
+        }
+        return $this->redirectToRoute('movie_detail', ['id' => $id]);
     }
 
     private function findTrailer(array $videos): ?array
