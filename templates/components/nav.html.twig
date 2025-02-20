@@ -2,14 +2,20 @@
     <div class="max-w-7xl mx-auto">
         <h1 class="text-5xl font-bold text-center pb-1 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
             <a href="{{ path('movie_list') }}">
-            Streamyz
+                Streamyz
             </a>
         </h1>
         <p class="text-center text-gray-300 text-lg pb-1">Découvrez tous les films à l'affiche</p>
     </div>
-    <section aria-labelledby="movies-search">
-        <form action="{{ path('movie_list') }}" method="GET" class="max-w-2xl mx-auto">
-            <div class="relative">
+
+    <section aria-labelledby="movies-search" class="relative max-w-2xl mx-auto">
+        <form action="{{ path('movie_list') }}" method="GET" class="flex items-center gap-4">
+            <!-- Bouton Favoris -->
+            <a href="{{ path('favorite_list') }}" class="px-4 py-3 rounded-xl border border-purple-400 text-purple-400 bg-transparent hover:bg-purple-600 hover:text-white transition-all duration-300">
+                Favoris
+            </a>
+
+            <div class="relative flex-grow">
                 <div class="absolute inset-y-0 start-0 flex items-center ps-4 pointer-events-none">
                     <svg class="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
@@ -27,6 +33,11 @@
                     Rechercher
                 </button>
             </div>
+
+            <!-- Bouton Voir tous les films -->
+            <a href="{{ path('movie_all') }}" class="px-4 py-3 rounded-xl border border-purple-400 text-purple-400 bg-transparent hover:bg-purple-600 hover:text-white transition-all duration-300">
+                Tous les films
+            </a>
         </form>
     </section>
 </header>
