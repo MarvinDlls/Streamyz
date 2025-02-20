@@ -42,18 +42,5 @@
 				<p class="text-center text-gray-400 text-lg mt-10">Aucun film ajouté en favoris.</p>
 			{% endif %}
 		</div>
-
-		<script>
-			function removeFavorite(event, favoriteId) {
-            event.preventDefault();
-            fetch (`/favorites/remove/${favoriteId}`, {method: 'DELETE'}).then(response => response.json()).then(data => {
-            if (data.status === 'success') {
-            location.reload();
-            } else {
-            alert('Erreur lors de la suppression');
-            }
-            });
-            }
-		</script>
 	</body>
 {% endblock %}
