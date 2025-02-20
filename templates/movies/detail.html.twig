@@ -9,7 +9,7 @@
     {# Bouton retour #}
     <div class="p-6">
         <button class="cursor-pointer transform active:scale-75 transition-transform bg-gray-800 p-2 rounded-full shadow-md hover:bg-gray-700">
-            <a href="{{ app.request.headers.get('referer') }}">
+            <a href="/">
                 {{ ux_icon('nrk:back', {height: '24px', width: '24px', color: 'white'}) }}
             </a>
         </button>
@@ -21,20 +21,20 @@
             {# Colonne gauche - Poster et note #}
             <div class="lg:w-1/3">
                 <div class="relative">
-                    <img class="w-full rounded-xl object-cover" 
-                         src="https://image.tmdb.org/t/p/w500{{ details.poster_path }}" 
-                         alt="{{ details.title }}">
-                    
+                    <img class="w-full rounded-xl object-cover"
+                        src="https://image.tmdb.org/t/p/w500{{ details.poster_path }}"
+                        alt="{{ details.title }}">
+
                     {# Cercle de vote #}
                     <div class="absolute top-2 right-2">
                         <div class="w-10 h-10 rounded-full bg-gray-900 border-gray-700 flex items-center justify-center relative">
                             <svg class="w-10 h-10 absolute top-0 left-0 transform -rotate-90" viewbox="0 0 36 36">
                                 <circle cx="18" cy="18" r="15.91549430918954" fill="transparent" stroke="#1a1a1a" stroke-width="3"></circle>
-                                <circle cx="18" cy="18" r="15.91549430918954" fill="transparent" 
-                                        stroke="{% if details.vote_average >= 7 %}#22c55e{% elseif details.vote_average >= 5 %}#eab308{% else %}#ef4444{% endif %}" 
-                                        stroke-width="3" 
-                                        stroke-dasharray="{{ (details.vote_average * 10)|round }}, 100" 
-                                        stroke-linecap="round" 
+                                <circle cx="18" cy="18" r="15.91549430918954" fill="transparent"
+                                        stroke="{% if details.vote_average >= 7 %}#22c55e{% elseif details.vote_average >= 5 %}#eab308{% else %}#ef4444{% endif %}"
+                                        stroke-width="3"
+                                        stroke-dasharray="{{ (details.vote_average * 10)|round }}, 100"
+                                        stroke-linecap="round"
                                         class="progress-circle"></circle>
                             </svg>
                             <span class="text-xs font-bold z-10 {% if details.vote_average >= 7 %}text-green-500{% elseif details.vote_average >= 5 %}text-yellow-500{% else %}text-red-500{% endif %}">
@@ -140,14 +140,14 @@
         {% if trailer %}
             <div class="mt-8">
                 <div class="aspect-video rounded-lg overflow-hidden">
-                    <iframe 
-                        src="https://www.youtube.com/embed/{{ trailer.key }}" 
+                    <iframe
+                        src="https://www.youtube.com/embed/{{ trailer.key }}"
                         class="w-full h-full"
                         allowfullscreen>
                     </iframe>
                 </div>
                 <form class="place-self-center" action="{{ path('movie_detail', {id: details.id}) }}" method="POST" class="mt-4">
-                    <button type="submit" 
+                    <button type="submit"
                             class="bg-gradient-to-r my-6 self-center from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-medium rounded-xl px-6 py-2.5 transition-all duration-300">
                         Signaler la video
                     </button>
