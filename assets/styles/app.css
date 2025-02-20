@@ -1,3 +1,32 @@
-body {
-    background-color: skyblue;
+@import "tailwindcss";
+
+.progress-circle {
+    transition: stroke-dasharray 0.3s ease;
+}
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    80% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+}
+.animate-fadeInOut {
+    animation: fadeInOut 5s ease forwards;
+}
+
+.favorite-icon {
+    color: #a78bfa; 
+    transition: color 0.3s ease-in-out; 
+}
+
+.favorite-active {
+    color: #16A34A !important; 
 }
