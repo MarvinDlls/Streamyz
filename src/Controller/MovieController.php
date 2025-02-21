@@ -177,7 +177,7 @@ class MovieController extends AbstractController
         } else {
             $report = new Report();
             $report->setTmdb($id);
-            $report->setUser($this->historyService->getUser());
+            $report->setUser($user);
             $report->setCreatedAt(new \DateTimeImmutable());
 
             $this->entityManager->persist($report);
